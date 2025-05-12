@@ -62,7 +62,7 @@ El sistema está compuesto por una API desarrollada en FastAPI, la cual expone u
 
 Antes de comenzar, se debe tener instalado lo siguiente:
 
-- **Python** `>= 3.9.6`  
+- **Python** `3.9.6`  
 - **MySQL**
 - **Git**
 - **Google Chrome**
@@ -305,4 +305,8 @@ Algunas cosas importantes son:
 - Asegurarse que el puerto 3306 esté disponible, hay alternativas a este puerto dependiendo de la computadora.
 - Algunos ordenadores requieren que la terminal de mysql permanezca abierta para ejecutar queries.
 
+### Instalación en windows
+Algunas cosas que podrían ayudar en la instalación son las siguientes:
+- Cambiar `tensorflow-io-gcs-filesystem==0.37.1` por la versión `0.31.0` debido a la falta de soporte binario.
+- Eliminar `uvloop==0.21.0` ya que no se nesesita en windows.
 
