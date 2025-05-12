@@ -37,7 +37,7 @@ El sistema está compuesto por una API desarrollada en FastAPI, la cual expone u
 {
   "forecast": [
     {
-      "Day": 1,
+      "day": 1,
       "pm25": 26.09385863225907,
       "aqi_num": 83,
       "aqi_cat": "Moderate",
@@ -47,7 +47,7 @@ El sistema está compuesto por una API desarrollada en FastAPI, la cual expone u
       ]
     },
     {
-      "Day": 2,
+      "day": 2,
       "pm25": 24.982506908290087,
       "aqi_num": 81,
       "aqi_cat": "Moderate",
@@ -57,7 +57,7 @@ El sistema está compuesto por una API desarrollada en FastAPI, la cual expone u
       ]
     },
     {
-      "Day": 3,
+      "day": 3,
       "pm25": 24.47068353369832,
       "aqi_num": 80,
       "aqi_cat": "Moderate",
@@ -67,7 +67,7 @@ El sistema está compuesto por una API desarrollada en FastAPI, la cual expone u
       ]
     },
     {
-      "Day": 4,
+      "day": 4,
       "pm25": 24.971195418760182,
       "aqi_num": 81,
       "aqi_cat": "Moderate",
@@ -77,7 +77,7 @@ El sistema está compuesto por una API desarrollada en FastAPI, la cual expone u
       ]
     },
     {
-      "Day": 5,
+      "day": 5,
       "pm25": 25.275221867486835,
       "aqi_num": 81,
       "aqi_cat": "Moderate",
@@ -87,7 +87,7 @@ El sistema está compuesto por una API desarrollada en FastAPI, la cual expone u
       ]
     },
     {
-      "Day": 6,
+      "day": 6,
       "pm25": 24.842046514339746,
       "aqi_num": 80,
       "aqi_cat": "Moderate",
@@ -97,7 +97,7 @@ El sistema está compuesto por una API desarrollada en FastAPI, la cual expone u
       ]
     },
     {
-      "Day": 7,
+      "day": 7,
       "pm25": 23.10268336571753,
       "aqi_num": 77,
       "aqi_cat": "Moderate",
