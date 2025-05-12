@@ -124,6 +124,7 @@ El sistema está compuesto por una API desarrollada en FastAPI, la cual expone u
 - `scraper.py`: Contiene la clase **`SemadetScraper`**, un scraper hecho con `Selenium` para obtener los datos del día actual desde el sitio oficial.
 - `database_manager.py`: Contiene la clase **`DBManager`**, encargada de las operaciones con la base de datos (lectura, inserción, actualización) implementado con `PyMysql`.
 - `forecaster.py`: Contiene la clase **`PM25Forecaster`**, que administra la carga del modelo y realiza la predicción usando los datos.
+- `aqicalculator.py`: Contiene la clase **`AQICalculator`**, que calcula el índice AQI correspondiente a la concentración de pm25 pronosticado.
 - `server.py`: Archivo principal de la API desarrollada con `FastAPI`, donde se define el endpoint `/api/v1/forecast`.
 - `config.py`: Archivo que contiene las credenciales de la base de datos utilizada. Debe modificarse del archivo `config_example.py` con las credenciales propias.
 - `semadet-aire-bd.csv`: Archivo con los datos históricos de la SEMADET para cargar a la base de datos.
