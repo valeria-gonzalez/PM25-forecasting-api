@@ -22,18 +22,90 @@ El sistema está compuesto por una API desarrollada en FastAPI, la cual expone u
 - `GET /api/v1/forecast`  
   Este endpoint devuelve las predicciones de PM2.5 para los próximos 7 días en formato JSON, basadas en los datos de los últimos 30 días (incluido hoy).
 
+  Devuelve un diccionario con el siguiente formato:
+
+  - `day` : Día que se pronostica.
+  - `pm25` : Índice de pm25 pronosticado.
+  - `aqi_num` : Índice AQI numérico correspondiente.
+  - `aqi_cat` : Categoría AQI correspondiente al índice AQI.
+  - `aqi_color` : Color hexadecimal que le corresponde al índice AQI.
+  - `recommendations` : Recomendaciones que se sugieren seguir para el índice AQI.
+
 ### 🧪 Ejemplo de respuesta JSON:
 
 ```json
 {
   "forecast": [
-    { "Day 1": 24.98 },
-    { "Day 2": 24.47 },
-    { "Day 3": 24.97 },
-    { "Day 4": 25.28 },
-    { "Day 5": 24.84 },
-    { "Day 6": 23.10 },
-    { "Day 7": 22.42 }
+    {
+      "Day": 1,
+      "pm25": 26.09385863225907,
+      "aqi_num": 83,
+      "aqi_cat": "Moderate",
+      "aqi_color": "FFFF00",
+      "recommendations": [
+        "Unusually sensitive people: Consider making outdoor activities shorter and less intense. Go inside if you have symptoms such as coughing or shortness of breath."
+      ]
+    },
+    {
+      "Day": 2,
+      "pm25": 24.982506908290087,
+      "aqi_num": 81,
+      "aqi_cat": "Moderate",
+      "aqi_color": "FFFF00",
+      "recommendations": [
+        "Unusually sensitive people: Consider making outdoor activities shorter and less intense. Go inside if you have symptoms such as coughing or shortness of breath."
+      ]
+    },
+    {
+      "Day": 3,
+      "pm25": 24.47068353369832,
+      "aqi_num": 80,
+      "aqi_cat": "Moderate",
+      "aqi_color": "FFFF00",
+      "recommendations": [
+        "Unusually sensitive people: Consider making outdoor activities shorter and less intense. Go inside if you have symptoms such as coughing or shortness of breath."
+      ]
+    },
+    {
+      "Day": 4,
+      "pm25": 24.971195418760182,
+      "aqi_num": 81,
+      "aqi_cat": "Moderate",
+      "aqi_color": "FFFF00",
+      "recommendations": [
+        "Unusually sensitive people: Consider making outdoor activities shorter and less intense. Go inside if you have symptoms such as coughing or shortness of breath."
+      ]
+    },
+    {
+      "Day": 5,
+      "pm25": 25.275221867486835,
+      "aqi_num": 81,
+      "aqi_cat": "Moderate",
+      "aqi_color": "FFFF00",
+      "recommendations": [
+        "Unusually sensitive people: Consider making outdoor activities shorter and less intense. Go inside if you have symptoms such as coughing or shortness of breath."
+      ]
+    },
+    {
+      "Day": 6,
+      "pm25": 24.842046514339746,
+      "aqi_num": 80,
+      "aqi_cat": "Moderate",
+      "aqi_color": "FFFF00",
+      "recommendations": [
+        "Unusually sensitive people: Consider making outdoor activities shorter and less intense. Go inside if you have symptoms such as coughing or shortness of breath."
+      ]
+    },
+    {
+      "Day": 7,
+      "pm25": 23.10268336571753,
+      "aqi_num": 77,
+      "aqi_cat": "Moderate",
+      "aqi_color": "FFFF00",
+      "recommendations": [
+        "Unusually sensitive people: Consider making outdoor activities shorter and less intense. Go inside if you have symptoms such as coughing or shortness of breath."
+      ]
+    }
   ]
 }
 ```

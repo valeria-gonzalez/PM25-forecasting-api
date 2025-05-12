@@ -75,7 +75,7 @@ def get_next_seven_day_forecast():
             recom = aqi_calc.get_aqi_recommendations("pm25", aqi_cat)
             
             forecast.append({
-                "Day": i+1,
+                "day": i+1,
                 "pm25": prediction,
                 "aqi_num": aqi_idx,
                 "aqi_cat": aqi_cat,
