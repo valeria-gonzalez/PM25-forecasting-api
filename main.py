@@ -1,6 +1,7 @@
 from forecaster import PM25Forecaster
 from database_manager import DBManager
 from scraper import SemadetScraper
+from aqicalculator import AqiCalculator
 import config
 import numpy as np
 
@@ -15,6 +16,8 @@ def main():
         model_filepath="models/lstm_seven_step.pkl",
         scaler_filepath="models/scaler.save",
     )
+    
+    aqi_calc = AqiCalculator()
     
     # 1 - Scrape todays data
     scraper = SemadetScraper()
@@ -46,6 +49,14 @@ def main():
     # 4 - Forecast next 7 days
     yhat = model.forecast(monthly_data)
     print(yhat)
+    
+    for y in yhat:
+        aqi_idx = aqi_calc.get_pollutant_aqi_num('pm25', y)
+        aqi_cat, color = aqi_calc.get_pollutant_aqi_str(aqi_idx)
+        print(f"y: {y}")
+        print(f"aqi num: {aqi_idx}")
+        print(f"aqi cat: {aqi_cat}, aqi color: {color}")
+        print(aqi_calc.get_aqi_recommendations("pm25", aqi_cat))
 
 if __name__ == "__main__":
     main()

@@ -1,11 +1,13 @@
 from fastapi import FastAPI, HTTPException
+from pathlib import Path
 from pydantic import BaseModel
 from typing import List, Dict
+
+import config
 from forecaster import PM25Forecaster
 from database_manager import DBManager
 from scraper import SemadetScraper
-from pathlib import Path
-import config
+from aqicalculator import AqiCalculator
 
 app = FastAPI()
 # usage fastapi dev server.py
@@ -13,7 +15,7 @@ app = FastAPI()
 
 # Define response model for FastAPI docs and validation
 class ForecastResponse(BaseModel):
-    forecast: List[Dict[str, float]]
+    forecast: List[dict]
 
 @app.get("/api/v1/forecast", response_model=ForecastResponse)
 def get_next_seven_day_forecast():
@@ -35,6 +37,9 @@ def get_next_seven_day_forecast():
 
         # Initialize scraper
         scraper = SemadetScraper()
+        
+        # Initialize AQI index calculator
+        aqi_calc = AqiCalculator()
 
         # Step 1 - Get today's data
         todays_data = scraper.get_todays_data()
@@ -58,14 +63,27 @@ def get_next_seven_day_forecast():
         # Step 3 - Get last 30 days of data
         monthly_data = db.get_last_n_daily_data(30)
 
-        # Step 4 - Run forecast
+        # Step 4 - Get seven day forecast
         predictions = model.forecast(monthly_data)
+        
+        forecast = []
+        
+        # Step 5 - Get AQI and recommendations for each forecast
+        for i, prediction in enumerate(predictions):
+            aqi_idx = aqi_calc.get_pollutant_aqi_num('pm25', prediction)
+            aqi_cat, aqi_color = aqi_calc.get_pollutant_aqi_str(aqi_idx)
+            recom = aqi_calc.get_aqi_recommendations("pm25", aqi_cat)
+            
+            forecast.append({
+                "Day": i+1,
+                "pm25": prediction,
+                "aqi_num": aqi_idx,
+                "aqi_cat": aqi_cat,
+                "aqi_color": aqi_color,
+                "recommendations": recom
+            })
 
         # Step 5 - Return forecast
-        forecast = [
-            {f"Day {i+1}": round(pred, 2)} 
-            for i, pred in enumerate(predictions)
-        ]
         return {"forecast": forecast}
 
     except Exception as e:

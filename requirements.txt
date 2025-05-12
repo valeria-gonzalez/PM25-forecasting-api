@@ -8,7 +8,6 @@ cffi==1.17.1
 charset-normalizer==3.4.2
 click==8.1.8
 cryptography==44.0.3
-dedent==0.5
 dnspython==2.7.0
 email_validator==2.2.0
 exceptiongroup==1.2.2
