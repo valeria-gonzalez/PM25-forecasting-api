@@ -5,9 +5,9 @@ Este proyecto implementa una API para la predicción de concentraciones de PM2.5
 
 ## 🔍 ¿De dónde provienen los datos?
 
-- Día actual: La información correspondiente al día en curso se extrae directamente del sitio oficial de la Secretaría de Medio Ambiente y Desarrollo Territorial (SEMADET), disponible en [este enlace](https://aire.jalisco.gob.mx/porestacion), mediante un proceso automatizado de web scraping desarrollado con Selenium.
+- **Día actual:** La información correspondiente al día en curso se extrae directamente del sitio oficial de la Secretaría de Medio Ambiente y Desarrollo Territorial (SEMADET), disponible en [este enlace](https://aire.jalisco.gob.mx/porestacion), mediante un proceso automatizado de web scraping desarrollado con Selenium.
 
-- Datos históricos: Los datos correspondientes a los 30 días anteriores (excluyendo el actual) provienen de una base de datos construida a partir de los archivos históricos proporcionados por SEMADET, disponibles en [este enlace](https://aire.jalisco.gob.mx/Dhistoricos).
+- **Datos históricos:** Los datos correspondientes a los 30 días anteriores (excluyendo el actual) provienen de una base de datos construida a partir de los archivos históricos proporcionados por SEMADET, disponibles en [este enlace](https://aire.jalisco.gob.mx/Dhistoricos).
 
 
 ## ⚙️ ¿Cómo funciona?
