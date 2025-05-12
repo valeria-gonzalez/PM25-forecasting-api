@@ -2,6 +2,9 @@ import pymysql
 import numpy as np
 
 class DBManager:
+    """
+    Database manager for MySQL.
+    """
     def __init__(self, host:str, port:int, user:str, password:str, db:str):
         self.host = host
         self.port = port
@@ -52,7 +55,7 @@ class DBManager:
         wind direction (in this order).
 
         Returns:
-            dict: Dictionary containing information.
+            dict: Dictionary with keys for pm25, tmp, rh, ws, and wd.
         """
         self._open()
         cursor = self.connection.cursor()
@@ -108,7 +111,7 @@ class DBManager:
         wind speed and wind direction.
 
         Args:
-            data (dict): Dictionary containing information.
+            data (dict): Dictionary with keys for date, pm25, tmp, rh, ws, and wd.
         """
         try:
             self._open()
@@ -138,7 +141,7 @@ class DBManager:
         relative humidity, wind speed and wind direction.
 
         Args:
-            data (dict): Dictionary containing information.
+            data (dict): Dictionary with keys for pm25, tmp, rh, ws, and wd.
         """
         try:
             self._open()
