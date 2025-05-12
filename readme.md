@@ -1,7 +1,7 @@
 
 # API de Pronóstico de PM2.5 en Tlaquepaque
 
-Esta es una **API de predicción de PM2.5** específicamente diseñada para el municipio de **Tlaquepaque, Jalisco**, que utiliza un modelo de aprendizaje profundo **LSTM (Long Short-Term Memory)** para predecir los niveles de **PM2.5** durante los **siguientes 7 días**, basándose en los datos de los **últimos 30 días**, incluyendo el actual.
+Esta es una API de predicción de PM2.5 específicamente diseñada para el municipio de Tlaquepaque, Jalisco, que utiliza un modelo de aprendizaje profundo LSTM (Long Short-Term Memory) para predecir los niveles de PM2.5 durante los siguientes 7 días, basándose en los datos de los últimos 30 días, incluyendo el actual.
 
 ## 🔍 ¿De dónde provienen los datos?
 
