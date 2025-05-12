@@ -62,7 +62,7 @@ Antes de comenzar, se debe tener instalado lo siguiente:
 - **Git**
 - **Google Chrome**
 
-> 🛑 Es necesario tener instalada una versión de Google Chrome que sea compatible con ChromeDriver. Puedes verificar la versión instalada en chrome://version y descargar la versión correspondiente de ChromeDriver [aquí](https://chromedriver.chromium.org/downloads). Generalmente la versión más reciente es compatible, si ya tienes Google Chrome, solo asegurarse de que esté actualizado. Para este proyecto se usa la versión `136.0.7103.93`.
+> 🛑 Es necesario tener instalada una versión de Google Chrome que sea compatible con ChromeDriver. Puedes verificar la versión instalada en `chrome://version` y descargar la versión correspondiente de ChromeDriver [aquí](https://chromedriver.chromium.org/downloads). Generalmente la versión más reciente es compatible, si ya tienes Google Chrome, solo asegurarse de que esté actualizado. Para este proyecto se usa la versión `136.0.7103.93`.
 
 ---
 
