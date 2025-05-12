@@ -9,7 +9,7 @@ class DBManager:
         self.password = password
         self.db = db
     
-    def open(self)->None:
+    def _open(self)->None:
         """Open connection to database"""
         self.connection = pymysql.connect(host=self.host,
                                           port=self.port,
@@ -17,7 +17,7 @@ class DBManager:
                                           password=self.password,
                                           db=self.db)
     
-    def close(self)->None:
+    def _close(self)->None:
         """Close connection to database"""
         self.connection.close()
         
@@ -32,7 +32,7 @@ class DBManager:
         Returns:
             tuple: A tuple with nested entries for each daily data.
         """
-        self.open()
+        self._open()
         cursor = self.connection.cursor()
         query = f""" 
             SELECT d.pm25, d.tmp, d.rh, d.ws, d.wd 
@@ -43,7 +43,7 @@ class DBManager:
         cursor.execute(query)
         result = cursor.fetchall()
         cursor.close()
-        self.close()
+        self._close()
         return np.asarray(result)
     
     def get_yesterdays_data(self)->dict:
@@ -54,7 +54,7 @@ class DBManager:
         Returns:
             dict: Dictionary containing information.
         """
-        self.open()
+        self._open()
         cursor = self.connection.cursor()
         query = f""" 
             SELECT d.pm25, d.tmp, d.rh, d.ws, d.wd 
@@ -65,7 +65,7 @@ class DBManager:
         cursor.execute(query)
         result = cursor.fetchall()
         cursor.close()
-        self.close()
+        self._close()
         
         result = np.asarray(result).flatten()
         data = {
@@ -87,7 +87,7 @@ class DBManager:
             int: id of entry if exists, None otherwise
         """
         
-        self.open()
+        self._open()
         cursor = self.connection.cursor()
         query = """
             SELECT d.id FROM daily_data d WHERE d.date = %s
@@ -95,7 +95,7 @@ class DBManager:
         cursor.execute(query,(date))
         result = cursor.fetchall()
         cursor.close()
-        self.close()
+        self._close()
         
         if len(result) == 0:
             return None
@@ -111,7 +111,7 @@ class DBManager:
             data (dict): Dictionary containing information.
         """
         try:
-            self.open()
+            self._open()
             cursor = self.connection.cursor()
             query = """
                 UPDATE daily_data 
@@ -130,7 +130,7 @@ class DBManager:
         except Exception as e:
             print(f"Error updating daily data: {e}")
         finally:
-            self.close()
+            self._close()
     
     def insert_daily_data(self, data:dict)->None:
         """Inserts a daily data entry to the database. This entry must include 
@@ -141,7 +141,7 @@ class DBManager:
             data (dict): Dictionary containing information.
         """
         try:
-            self.open()
+            self._open()
             cursor = self.connection.cursor()
             query = """
                 INSERT INTO daily_data (date, pm25, tmp, rh, ws, wd)
@@ -159,7 +159,7 @@ class DBManager:
         except Exception as e:
             print(f"Error inserting daily data: {e}")
         finally:
-            self.close()
+            self._close()
         
         
         
