@@ -1,7 +1,12 @@
 
-# API de Pronóstico de PM2.5 en Tlaquepaque
-
+# 🌫️  API de Pronóstico de PM2.5 en Tlaquepaque
 Este proyecto implementa una API para la predicción de concentraciones de PM2.5 en el municipio de Tlaquepaque, Jalisco, utilizando un modelo de redes neuronales tipo LSTM (Long Short-Term Memory). La predicción se realiza para un horizonte de 7 días, a partir de datos atmosféricos de los últimos 30 días, incluyendo el día actual.
+
+### Motivación
+La contaminación del aire representa un importante problema de salud pública en el Área Metropolitana de Guadalajara (AMG), donde las concentraciones de PM10 y ozono (O₃) superan frecuentemente los límites considerados seguros. La exposición a material particulado, especialmente durante la temporada invernal, se asocia con riesgos graves para la salud, tales como cáncer pulmonar, neumonía y agravamiento del asma. La predicción de los niveles de contaminantes permite implementar medidas preventivas de forma oportuna, con el fin de proteger la salud de la población.
+
+### ¿Por qué PM2.5?
+Si bien el PM10 es el contaminante predominante en la región, el PM2.5, que presenta una alta correlación con el PM10 en esta zona, cuenta con un conjunto de datos más completo y confiable, lo que lo convierte en un mejor candidato para el desarrollo de modelos predictivos.
 
 ## 🔍 ¿De dónde provienen los datos?
 
@@ -277,7 +282,7 @@ Ahora la API está lista para ser utilizada. Solo realiza llamadas al endpoint `
 
 ---
 
-## Posibles dificultades
+## 🛠️ Posibles dificultades
 
 ### Urllib
 
