@@ -1,20 +1,21 @@
 
 # API de Pronóstico de PM2.5 en Tlaquepaque
 
-Esta es una API de predicción de PM2.5 específicamente diseñada para el municipio de Tlaquepaque, Jalisco, que utiliza un modelo de aprendizaje profundo LSTM (Long Short-Term Memory) para predecir los niveles de PM2.5 durante los siguientes 7 días, basándose en los datos de los últimos 30 días, incluyendo el actual.
+Este proyecto implementa una API para la predicción de concentraciones de PM2.5 en el municipio de Tlaquepaque, Jalisco, utilizando un modelo de redes neuronales tipo LSTM (Long Short-Term Memory). La predicción se realiza para un horizonte de 7 días, a partir de datos atmosféricos de los últimos 30 días, incluyendo el día actual.
 
 ## 🔍 ¿De dónde provienen los datos?
 
-- 📅 **Día actual:** La información se obtiene en tiempo real desde la página oficial de SEMADET, disponible [aqui](https://aire.jalisco.gob.mx/porestacion), mediante un scraper web implementado con **Selenium**.
+- Día actual: La información correspondiente al día en curso se extrae directamente del sitio oficial de la Secretaría de Medio Ambiente y Desarrollo Territorial (SEMADET), disponible en [este enlace](https://aire.jalisco.gob.mx/porestacion), mediante un proceso automatizado de web scraping desarrollado con Selenium.
 
-- 📊 **Histórico:** Los últimos 30 días (excluyendo el actual) se obtienen desde la base de datos construida a partir de los archivos históricos descargados de [aqui](https://aire.jalisco.gob.mx/Dhistoricos).
+- Datos históricos: Los datos correspondientes a los 30 días anteriores (excluyendo el actual) provienen de una base de datos construida a partir de los archivos históricos proporcionados por SEMADET, disponibles en [este enlace](https://aire.jalisco.gob.mx/Dhistoricos).
+
 
 ## ⚙️ ¿Cómo funciona?
 
-El sistema está compuesto por una API desarrollada en **FastAPI**, la cual expone un único endpoint:
+El sistema está compuesto por una API desarrollada en FastAPI, la cual expone un único endpoint:
 
 - `GET /api/v1/forecast`  
-  Este endpoint devuelve las predicciones de **PM2.5** para los próximos 7 días en formato **JSON**, basadas en los datos de los últimos 30 días (incluido hoy).
+  Este endpoint devuelve las predicciones de PM2.5 para los próximos 7 días en formato JSON, basadas en los datos de los últimos 30 días (incluido hoy).
 
 ### 🧪 Ejemplo de respuesta JSON:
 
@@ -43,10 +44,10 @@ El sistema está compuesto por una API desarrollada en **FastAPI**, la cual expo
 
 ## 📦 Estructura del proyecto
 
-- `scraper.py`: Contiene la clase **`SemadetScraper`**, un scraper hecho con **Selenium** para obtener los datos del día actual desde el sitio oficial.
-- `database_manager.py`: Contiene la clase **`DBManager`**, encargada de las operaciones con la base de datos (lectura, inserción, actualización).
+- `scraper.py`: Contiene la clase **`SemadetScraper`**, un scraper hecho con `Selenium` para obtener los datos del día actual desde el sitio oficial.
+- `database_manager.py`: Contiene la clase **`DBManager`**, encargada de las operaciones con la base de datos (lectura, inserción, actualización) implementado con `PyMysql`.
 - `forecaster.py`: Contiene la clase **`PM25Forecaster`**, que administra la carga del modelo y realiza la predicción usando los datos.
-- `server.py`: Archivo principal de la API desarrollada con **FastAPI**, donde se define el endpoint `/api/v1/forecast`.
+- `server.py`: Archivo principal de la API desarrollada con `FastAPI`, donde se define el endpoint `/api/v1/forecast`.
 - `config.py`: Archivo que contiene las credenciales de la base de datos utilizada. Debe modificarse del archivo `config_example.py` con las credenciales propias.
 - `semadet-aire-bd.csv`: Archivo con los datos históricos de la SEMADET para cargar a la base de datos.
 - `requirements.txt`: Archivo que tiene los requerimientos de las librerías de Python necesarias para utilizar el proyecto.
@@ -54,7 +55,7 @@ El sistema está compuesto por una API desarrollada en **FastAPI**, la cual expo
 
 ## 🧰 Requisitos
 
-Antes de comenzar, asegúrate de tener instalado lo siguiente:
+Antes de comenzar, se debe tener instalado lo siguiente:
 
 - **Python** `>= 3.9.6`  
 - **MySQL**
@@ -64,13 +65,11 @@ Antes de comenzar, asegúrate de tener instalado lo siguiente:
 
 ## 🔧 Guía de instalación
 
-A continuación se explicará como instalar el proyecto en el entorno local.
-
-> 🛑 Todos los comandos en estos pasos se harán dentro del repositorio del proyecto.
+> 🛑 Nota: Todos los comandos deben ejecutarse desde la raíz del proyecto.
 
 ### 1. Clonar el repositorio
 
-Primero, clona este repositorio a tu máquina local en la dirección donde lo quieras tener guardado:
+Clonar el repositorio del proyecto al entorno local mediante los siguientes comandos:
 
 ```bash
 git clone https://github.com/valeria-gonzalez/PM25-forecasting-api.git
@@ -121,7 +120,7 @@ deactivate
 
 ### 3. Instalar dependencias
 
-Con el entorno virtual activado, instala las librerías necesarias mediante el archivo `requirements.txt`:
+Con el entorno virtual activado, instalar las librerías necesarias mediante el archivo `requirements.txt`:
 
 ```bash
 pip install -r requirements.txt
@@ -133,22 +132,22 @@ Esto instalará todas las dependencias necesarias para que el proyecto funcione 
 
 ### 4. Crear base de datos en MySQL
 
-Para este paso es importante tener instalado MySQL. Una vez asegurado eso, conéctate a MySQL:
+Para este paso es importante tener instalado MySQL. Una vez asegurado eso, conectarse a MySQL mediante el siguiente comando:
 
 ```bash
 mysql -u root -p
 ```
 
-Luego ejecuta los siguientes comandos:
+Luego ejecutar los siguientes comandos:
 
 ```sql
 CREATE DATABASE weather;
 USE weather;
 ```
 
-El nombre de la base de datos puede cambiar, solo asegurarse de especificarlo en el `config.py`.
+El nombre de la base de datos puede cambiar, solo asegurarse de especificarlo en el `config.py` (véase el paso 7).
 
-Crea la tabla `daily_data`, este nombre no puede cambiar:
+Crear la tabla `daily_data`, este nombre no puede cambiar:
 
 ```sql
 CREATE TABLE daily_data(
@@ -165,35 +164,35 @@ CREATE TABLE daily_data(
 
 ---
 
-### 6. Importar datos desde archivo CSV
+### 6. Importar datos históricos desde archivo CSV
 
 Una vez creada la base de datos y la tabla, es necesario poblarla con los datos históricos de la SEMADET que se encuentran en el archivo `semadet-aire-bd.csv`. 
 
-Para permitir carga local de archivos a MySQL, ejecuta:
+Para permitir carga local de archivos a MySQL, ejecutar:
 
 ```sql
 SET GLOBAL local_infile=1;
 ```
 
-Luego, sal de MySQL usando:
+Luego, salir de MySQL usando:
 
 ```sql
 quit;
 ```
 
-Ahora vuelve a entrar con soporte para archivos locales:
+Volver a entrar con soporte para archivos locales:
 
 ```bash
 mysql --local-infile=1 -u root -p
 ```
 
-Dentro de MySQL, selecciona la base de datos:
+Dentro de MySQL, seleccionar la base de datos:
 
 ```sql
 USE weather;
 ```
 
-Carga los datos a la tabla, es importante reemplazar la ruta del archivo CSV con la ubicación correcta en tú entorno local:
+Cargar los datos a la tabla, es importante reemplazar la ruta del archivo CSV con la ubicación correcta en el entorno local:
 
 ```sql
 LOAD DATA LOCAL INFILE '/ruta/a/archivo/semadet-aire-bd.csv'
@@ -212,9 +211,11 @@ También es importante que durante todo este proceso el servidor de MySQL se enc
 
 ### 7. Configurar `config.py`
 
-Para que la API pueda obtener la información de tú base de datos local, debes escribir tus credenciales en un archivo llamado `config.py`. Para hacer esto debes copiar el archivo de ejemplo `config_example.py` y renombrarlo como `config.py`. Este archivo tiene la estructura necesaria con datos de ejemplo, por favor reemplazarlos con los de tú base de datos. 
+Para que la API pueda obtener la información de la base de datos local, se deben escribir las credenciales en un archivo llamado `config.py`. Para hacer esto, copiar el archivo de ejemplo `config_example.py` y renombrarlo como `config.py`. 
 
-Para copiar el archivo y renombrarlo puedes ejecutar los siguientes comandos:
+Este archivo tiene la estructura necesaria con datos de ejemplo, reemplazarlos con los datos correctos.
+
+Para copiar el contenido del archivo `config_example.py` y renombrarlo ejecutar los siguientes comandos:
 
 #### **Linux / macOS:**
 
@@ -230,7 +231,7 @@ copy config_example.py config.py
 
 > Este archivo contendrá tus credenciales de conexión a MySQL.
 
-Abre el archivo `config.py` y coloca tus credenciales de conexión a MySQL. Ejemplo:
+Abrir el archivo `config.py` y colocar tus credenciales de conexión a MySQL. Ejemplo:
 
 ```python
 host = 'localhost'
@@ -244,7 +245,7 @@ db = 'weather'
 
 ## 🚀 Ejecutar la API
 
-Con el entorno virtual activado y dentro del directorio del proyecto, ejecuta:
+Con el entorno virtual activado y dentro del directorio del proyecto, ejecutar:
 
 ```bash
 fastapi dev server.py
@@ -258,7 +259,7 @@ http://127.0.0.1:8000
 
 ### 📡 Endpoints
 
-Para ver como funciona la API, puedes acceder a los siguientes endpoints:
+Para ver como funciona la API, acceder a los siguientes endpoints:
 
 - `http://127.0.0.1:8000/api/v1/forecast` → Pronóstico de PM2.5 para los próximos 7 días.
 - `http://127.0.0.1:8000/docs` → Documentación interactiva de la API (Swagger UI).
