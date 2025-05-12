@@ -70,7 +70,7 @@ def get_next_seven_day_forecast():
         
         # Step 5 - Get AQI and recommendations for each forecast
         for i, prediction in enumerate(predictions):
-            aqi_idx = aqi_calc.get_pollutant_aqi_num('pm25', prediction)
+            aqi_idx = aqi_calc.get_pollutant_aqi_num("pm25", prediction)
             aqi_cat, aqi_color = aqi_calc.get_pollutant_aqi_str(aqi_idx)
             recom = aqi_calc.get_aqi_recommendations("pm25", aqi_cat)
             
