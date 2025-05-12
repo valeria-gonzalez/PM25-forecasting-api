@@ -1,8 +1,55 @@
-con
-# API de Pronóstico de PM2.5
 
-Este proyecto proporciona una API que predice los niveles de **PM2.5** para los próximos 7 días utilizando datos meteorológicos. Se basa en aprendizaje automático y está diseñada para facilitar su implementación localmente.
+# API de Pronóstico de PM2.5 en Tlaquepaque
 
+Esta es una **API de predicción de PM2.5** específicamente diseñada para el municipio de **Tlaquepaque, Jalisco**, que utiliza un modelo de aprendizaje profundo **LSTM (Long Short-Term Memory)** para predecir los niveles de **PM2.5** durante los **siguientes 7 días**, basándose en los datos de los **últimos 30 días**, incluyendo el actual.
+
+## 🔍 ¿De dónde provienen los datos?
+
+- 📅 **Día actual:** La información se obtiene en tiempo real desde la página oficial de SEMADET, disponible [aqui](https://aire.jalisco.gob.mx/porestacion), mediante un scraper web implementado con **Selenium**.
+
+- 📊 **Histórico:** Los últimos 30 días (excluyendo el actual) se obtienen desde la base de datos construida a partir de los archivos históricos descargados de [aqui](https://aire.jalisco.gob.mx/Dhistoricos).
+
+## ⚙️ ¿Cómo funciona?
+
+El sistema está compuesto por una API desarrollada en **FastAPI**, la cual expone un único endpoint:
+
+- `GET /api/v1/forecast`  
+  Este endpoint devuelve las predicciones de **PM2.5** para los próximos 7 días en formato **JSON**, basadas en los datos de los últimos 30 días (incluido hoy).
+
+### 🧪 Ejemplo de respuesta JSON:
+
+```json
+{
+  "forecast": [
+    { "Day 1": 24.98 },
+    { "Day 2": 24.47 },
+    { "Day 3": 24.97 },
+    { "Day 4": 25.28 },
+    { "Day 5": 24.84 },
+    { "Day 6": 23.10 },
+    { "Day 7": 22.42 }
+  ]
+}
+```
+
+### 🔄 Flujo del endpoint `/api/v1/forecast`
+
+1. **Carga del modelo LSTM** preentrenado.
+2. **Obtención del dato del día actual** desde la web de SEMADET vía web scraping.
+3. **Actualización o inserción** del dato del día actual en la base de datos local.
+4. **Consulta de los últimos 30 días** de datos desde la base de datos.
+5. **Generación de predicción** usando el modelo LSTM y los datos de los últimos 30 días.
+6. **Respuesta al usuario** en formato JSON con los valores estimados para los próximos 7 días.
+
+## 📦 Estructura del proyecto
+
+- `scraper.py`: Contiene la clase **`SemadetScraper`**, un scraper hecho con **Selenium** para obtener los datos del día actual desde el sitio oficial.
+- `database_manager.py`: Contiene la clase **`DBManager`**, encargada de las operaciones con la base de datos (lectura, inserción, actualización).
+- `forecaster.py`: Contiene la clase **`PM25Forecaster`**, que administra la carga del modelo y realiza la predicción usando los datos.
+- `server.py`: Archivo principal de la API desarrollada con **FastAPI**, donde se define el endpoint `/api/v1/forecast`.
+- `config.py`: Archivo que contiene las credenciales de la base de datos utilizada. Debe modificarse del archivo `config_example.py` con las credenciales propias.
+- `semadet-aire-bd.csv`: Archivo con los datos históricos de la SEMADET para cargar a la base de datos.
+- `requirements.txt`: Archivo que tiene los requerimientos de las librerías de Python necesarias para utilizar el proyecto.
 ---
 
 ## 🧰 Requisitos
@@ -17,22 +64,29 @@ Antes de comenzar, asegúrate de tener instalado lo siguiente:
 
 ## 🔧 Guía de instalación
 
+A continuación se explicará como instalar el proyecto en el entorno local.
+
+> 🛑 Todos los comandos en estos pasos se harán dentro del repositorio del proyecto.
+
 ### 1. Clonar el repositorio
 
-Primero, clona este repositorio a tu máquina local:
+Primero, clona este repositorio a tu máquina local en la dirección donde lo quieras tener guardado:
 
 ```bash
-git clone https://github.com/usuario/tu-repo.git
-cd tu-repo
+git clone https://github.com/valeria-gonzalez/PM25-forecasting-api.git
+cd PM25-forecasting-api
 ```
-
-> 🔁 *Sustituye el enlace con el de tu repositorio real.*
-
 ---
 
 ### 2. Crear un entorno virtual
 
-Se recomienda crear un entorno virtual para evitar conflictos entre librerías.
+Se recomienda crear un entorno virtual para evitar conflictos entre librerías cuando se trabaja con Python. 
+
+Para ello es necesario contar con la librería `venv`, que viene incluida a partir de Python 3.3. En la mayoría de instalaciones modernas de Python (>= 3.9.6), ya está disponible por defecto. 
+
+Asimismo, se recomienda nombrar al entorno virtual como `env`, al terminar de ejecutar estos comandos, se tendrá un directorio llamado `env`.
+
+Para hacer esto se pueden utilizar los siguiente comandos: 
 
 #### **Linux / macOS:**
 
@@ -61,10 +115,13 @@ deactivate
 ```
 
 ---
+> ⚠️ Al activar el entorno virtual, deberá aparecer un (env) en la terminal.
+
+> 🛑 Los siguientes pasos se pueden hacer sin esta sección. Sin embargo, todas las librerías se instalarán a tú entorno global y pueden existir conflictos entre versiones existentes.
 
 ### 3. Instalar dependencias
 
-Con el entorno virtual activado, instala las librerías necesarias:
+Con el entorno virtual activado, instala las librerías necesarias mediante el archivo `requirements.txt`:
 
 ```bash
 pip install -r requirements.txt
@@ -74,29 +131,9 @@ Esto instalará todas las dependencias necesarias para que el proyecto funcione 
 
 ---
 
-### 4. Configurar el archivo de conexión a base de datos
+### 4. Crear base de datos en MySQL
 
-Debes copiar el archivo de ejemplo `config_example.py` y renombrarlo como `config.py`.
-
-#### **Linux / macOS:**
-
-```bash
-cp config_example.py config.py
-```
-
-#### **Windows (CMD):**
-
-```cmd
-copy config_example.py config.py
-```
-
-> Este archivo contendrá tus credenciales de conexión a MySQL.
-
----
-
-### 5. Crear base de datos en MySQL
-
-Conéctate a MySQL:
+Para este paso es importante tener instalado MySQL. Una vez asegurado eso, conéctate a MySQL:
 
 ```bash
 mysql -u root -p
@@ -109,7 +146,9 @@ CREATE DATABASE weather;
 USE weather;
 ```
 
-Crea la tabla obligatoria `daily_data`:
+El nombre de la base de datos puede cambiar, solo asegurarse de especificarlo en el `config.py`.
+
+Crea la tabla `daily_data`, este nombre no puede cambiar:
 
 ```sql
 CREATE TABLE daily_data(
@@ -128,13 +167,15 @@ CREATE TABLE daily_data(
 
 ### 6. Importar datos desde archivo CSV
 
-Para permitir carga local de archivos, ejecuta:
+Una vez creada la base de datos y la tabla, es necesario poblarla con los datos históricos de la SEMADET que se encuentran en el archivo `semadet-aire-bd.csv`. 
+
+Para permitir carga local de archivos a MySQL, ejecuta:
 
 ```sql
 SET GLOBAL local_infile=1;
 ```
 
-Luego, sal de MySQL:
+Luego, sal de MySQL usando:
 
 ```sql
 quit;
@@ -152,7 +193,7 @@ Dentro de MySQL, selecciona la base de datos:
 USE weather;
 ```
 
-Carga los datos (reemplaza la ruta con la ubicación real del archivo CSV):
+Carga los datos a la tabla, es importante reemplazar la ruta del archivo CSV con la ubicación correcta en tú entorno local:
 
 ```sql
 LOAD DATA LOCAL INFILE '/ruta/a/archivo/semadet-aire-bd.csv'
@@ -162,11 +203,32 @@ LINES TERMINATED BY '\n'
 IGNORE 1 LINES;
 ```
 
-> ⚠️ Asegúrate de que el archivo CSV esté correctamente formateado y accesible.
+> ⚠️ Asegúrate de que la ruta del archivo CSV esté correctamente escrito.
+
+Una vez hecho esto, para que el proyecto funcione, algunos ordenadores requieren que la terminal de mysql permanezca abierta.
+También es importante que durante todo este proceso el servidor de MySQL se encuentre activo.
 
 ---
 
 ### 7. Configurar `config.py`
+
+Para que la API pueda obtener la información de tú base de datos local, debes escribir tus credenciales en un archivo llamado `config.py`. Para hacer esto debes copiar el archivo de ejemplo `config_example.py` y renombrarlo como `config.py`. Este archivo tiene la estructura necesaria con datos de ejemplo, por favor reemplazarlos con los de tú base de datos. 
+
+Para copiar el archivo y renombrarlo puedes ejecutar los siguientes comandos:
+
+#### **Linux / macOS:**
+
+```bash
+cp config_example.py config.py
+```
+
+#### **Windows (CMD):**
+
+```cmd
+copy config_example.py config.py
+```
+
+> Este archivo contendrá tus credenciales de conexión a MySQL.
 
 Abre el archivo `config.py` y coloca tus credenciales de conexión a MySQL. Ejemplo:
 
@@ -196,6 +258,8 @@ http://127.0.0.1:8000
 
 ### 📡 Endpoints
 
+Para ver como funciona la API, puedes acceder a los siguientes endpoints:
+
 - `http://127.0.0.1:8000/api/v1/forecast` → Pronóstico de PM2.5 para los próximos 7 días.
 - `http://127.0.0.1:8000/docs` → Documentación interactiva de la API (Swagger UI).
 
@@ -205,6 +269,31 @@ http://127.0.0.1:8000
 
 ## ✅ ¡Listo!
 
-Ahora tu API está lista para ser utilizada. Solo realiza llamadas al endpoint `/api/v1/forecast` para obtener los pronósticos diarios basados en los datos actuales de la base de datos.
+Ahora la API está lista para ser utilizada. Solo realiza llamadas al endpoint `/api/v1/forecast` para obtener los pronósticos diarios basados en los datos actuales de la base de datos.
+
+---
+
+## Posibles dificultades
+
+### Urllib
+
+Si al ejecutar el endpoint se obtiene el siguiente warning: 
+```text
+ImportError: urllib3 v2.0 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with LibreSSL 2.8.3
+```
+
+Se puede ejecutar el siguiente comando, sin embargo, no debería impedir el funcionamiento del proyecto:
+```bash
+pip3 install urllib3==1.26.6
+```
+
+### Base de datos
+Algunas cosas importantes son:
+
+- Tener encendido el servidor de MySQL.
+- Escribir las credenciales correctas en el `config.py`.
+- Reenombrar el archivo `config_example.py` a `config.py`.
+- Asegurarse que el puerto 3306 esté disponible, hay alternativas a este puerto dependiendo de la computadora.
+- Algunos ordenadores requieren que la terminal de mysql permanezca abierta para ejecutar queries.
 
 
