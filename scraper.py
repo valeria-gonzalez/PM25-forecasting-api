@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 import numpy as np
 from datetime import datetime
 from selenium import webdriver
@@ -10,6 +10,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class SemadetScraper:
+    """
+    Web scraper to obtain the daily data from the SEMADET website.
+    """
     def __init__(self):
         self.website_link = "https://aire.jalisco.gob.mx/porestacion"
         self.city = "Tlaquepaque"
@@ -29,18 +32,21 @@ class SemadetScraper:
         except ValueError:
             return None
             
-    def _scrape_meteorological_data(self)->dict:
+    def _scrape_meteorological_data(self)->Dict[str,List[float]]:
         """Scrape the meteorological data: temperature, relative humidity, 
         wind direction and wind speed from the Semadet website. It tries at
         least twice to do this, if it fails, it returns a dictionary with empty
         keys.
 
         Returns:
-            dict: Dictionary with keys for tmp, rh, wd, and ws.
+            dict: Dictionary with keys for tmp, rh, wd, and ws and a list of values
+            for each.
         """
+        # Try twice to scrape data
         for attempt in range(2):
             driver = None
             try:
+                # Create a web driver that doesn't open browser
                 op = webdriver.ChromeOptions()
                 op.add_argument('headless')
                 driver = webdriver.Chrome(options=op)
@@ -49,7 +55,7 @@ class SemadetScraper:
                 # Select city
                 Select(driver.find_element(By.ID, "l_Estaciones")).select_by_value(self.city)
 
-                # Select data type
+                # Select type of data to scrape
                 Select(driver.find_element(By.ID, "c_Tipo")).select_by_visible_text("Meteorología Horario")
 
                 # Submit form
@@ -70,16 +76,19 @@ class SemadetScraper:
                 
                 # Dictionary to store table data in order
                 data = { "tmp":[], "rh":[], "ws":[], "wd":[]}
+                # Order of data obtained from website
                 idxs = ["tmp", "rh", "wd", "ws"]
 
                 for i, row in enumerate(rows):
                     try:
                         # Refetch the row in each iteration to avoid stale references
                         row = driver.find_elements(By.CSS_SELECTOR, "#MET tr")[i]
+                        # Fetch each column in row
                         cells = row.find_elements(By.TAG_NAME, "td")
                     
                         if len(cells) == 5:  # Expected number of columns
                             for i, cell in enumerate(cells):
+                                # The first column is the date
                                 if i != 0:
                                     value = self._to_numerical(cell.text)
                                     if(value != None):
@@ -97,20 +106,23 @@ class SemadetScraper:
             finally:
                 if driver:
                     driver.quit()
-
+                    
+        # Return empty dictionary by default
         return { "tmp":[], "rh":[], "ws":[], "wd":[]}
             
-    def _scrape_pollutant_data(self)->dict:
+    def _scrape_pollutant_data(self)->Dict[str,List[float]]:
         """Scrape the pollutant concentration data: particulate matter below 2.5 
         micrometers from the Semadet website. It tries at least twice to do this, 
         if it fails, it returns a dictionary with empty keys.
 
         Returns:
-            dict: Dictionary with a key for pm25.
+            dict: Dictionary with a key for pm25 and a list of values for it.
         """
+        # Try twice to scrape data
         for attempt in range(2):
             driver = None
             try:
+                # Create a web driver that doesn't open browser
                 op = webdriver.ChromeOptions()
                 op.add_argument('headless')
                 driver = webdriver.Chrome(options=op)
@@ -119,7 +131,7 @@ class SemadetScraper:
                 # Select city
                 Select(driver.find_element(By.ID, "l_Estaciones")).select_by_value(self.city)
 
-                # Select data type
+                # Select type of data to scrape
                 Select(driver.find_element(By.ID, "c_Tipo")).select_by_visible_text("Concentración Horario")
 
                 # Submit form
@@ -145,10 +157,12 @@ class SemadetScraper:
                     try:
                         # Refetch the row in each iteration to avoid stale references
                         row = driver.find_elements(By.CSS_SELECTOR, "#CEN tr")[i]
+                        # Fetch each column in row
                         cells = row.find_elements(By.TAG_NAME, "td")
                     
                         if len(cells) == 7:  # Expected number of columns
                             for i, cell in enumerate(cells):
+                                # Only extract pm25 in column 6
                                 if i != 6:
                                     value = self._to_numerical(cell.text)
                                     if(value != None):
@@ -166,7 +180,8 @@ class SemadetScraper:
             finally:
                 if driver:
                     driver.quit()
-
+                    
+        # Return empty dictionary by default
         return { "pm25":[]}
                 
     def _circular_mean(self, angles:List[float])->float:
@@ -184,7 +199,7 @@ class SemadetScraper:
         mean_angle = np.arctan2(mean_sin, mean_cos)  
         return float(np.rad2deg(mean_angle) % 360)
         
-    def _avg_of_data(self, data:dict)->dict:
+    def _avg_of_data(self, data:Dict[str,List[float]])->dict:
         """Calculate average of floating point values in a dictionary obtained
         from web scraping, to obtain the daily average of each value.
 
@@ -209,33 +224,33 @@ class SemadetScraper:
                 
         return avg_data
         
-    def _get_meteorological_data(self)->dict:
+    def _get_meteorological_data(self)->Dict[str,List[float]]:
         """Obtain the current day's meteorological data from the Semadet Website. 
         This data is: temperature, relative humidity, wind direction and wind 
         speed. It returns a dictionary with the average value of each entry. 
         The keys will have either value None or a float.
         
         Returns:
-            Dict: Dictionary with entries for tmp, rh, wd, and ws.
+            Dict: Dictionary with keys for tmp, rh, wd, and ws.
         """
         data = self._scrape_meteorological_data()
         avg_data = self._avg_of_data(data)
         return avg_data
         
-    def _get_pollutant_data(self):
+    def _get_pollutant_data(self)->Dict[str,List[float]]:
         """Obtain the current day's pollutant concentration data from the 
         Semadet Website. This data is: particulate matter below 2.5 micrometers. 
         It returns a dictionary with the average value of each entry. The
         keys will have either value None or a float.
         
         Returns:
-            Dict: Dictionary with entries for pm25.
+            Dict: Dictionary with keys for pm25.
         """
         data = self._scrape_pollutant_data()
         avg_data = self._avg_of_data(data)
         return avg_data
     
-    def _todays_date(self):
+    def _todays_date(self)->str:
         """Obtain a string of today's date as YYYY-MM-DD.
 
         Returns:
@@ -255,9 +270,9 @@ class SemadetScraper:
         keys will have either value None or a float.
         
         Returns:
-            dict: A dictionary with today's data.
+            dict: A dictionary with keys for date, tmp, rh, wd, and ws and pm25.
         """
-        today = {"date": self._todays_date()}
+        todays_date = {"date": self._todays_date()}
         pltnt_data = self._get_pollutant_data()
         met_data = self._get_meteorological_data()
-        return today | pltnt_data | met_data
+        return todays_date | pltnt_data | met_data
